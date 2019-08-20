@@ -9,6 +9,8 @@ var caption3 = document.getElementById('figure3');
 
 var imagesUsed = [];
 var totalClicks = 0;
+var percents = [];
+var labels = [];
 
 console.log (pic1);
 
@@ -91,7 +93,24 @@ function showImages () {
 
 }
 
+function getPercentages () {
+  for (var i = 0; i < Image.list.length; i++) {
+    var percent = Math.floor((Image.list[i].clicks/Image.list[i].shown) * 100);
+
+    percents.push(percent);
+  }
+}
+
+function getLabels () {
+  for (var i = 0; i < Image.list.length; i++) {
+    var name = Image.list[i].name;
+
+    labels.push(name);
+  }
+}
+
 showImages();
+getLabels ();
 
 pic1.addEventListener('click', chosenOne);
 pic2.addEventListener('click', chosenTwo);
@@ -107,7 +126,8 @@ function chosenOne () {
     pic2.removeEventListener('click', chosenTwo);
     pic3.removeEventListener('click', chosenThree);
 
-    showChoices();
+    getPercentages();
+    makeChart();
   }
 }
 
@@ -121,7 +141,8 @@ function chosenTwo () {
     pic2.removeEventListener('click', chosenTwo);
     pic3.removeEventListener('click', chosenThree);
 
-    showChoices();
+    getPercentages();
+    makeChart();
   }
 }
 
@@ -135,32 +156,32 @@ function chosenThree () {
     pic2.removeEventListener('click', chosenTwo);
     pic3.removeEventListener('click', chosenThree);
 
-    showChoices();
+    getPercentages();
+    makeChart();
   }
 }
 
-function showChoices() {
-  var option = document.createElement('ul');
-  var listHere = document.getElementById('choices');
-  listHere.appendChild(option);
-  option.id = 'listyloo';
 
-  var placeHere = document.getElementById('listyloo');
+function makeChart () {
+//Sourced from chartjs.org
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var chart = new Chart(ctx, {
+  // The type of chart we want to create
+    type: 'bar',
 
-  for (var i = 0; i < Image.list.length; i++){
+    // The data for our dataset
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Item Selections by Percent',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: percents
+      }]
+    },
 
-    var name = document.createElement('li');
-    name.textContent = 'Item: ' + Image.list[i].name;
-    placeHere.appendChild(name);
-
-    var clicks = document.createElement('li');
-    clicks.textContent = 'Clicks: ' + Image.list[i].clicks;
-    placeHere.appendChild(clicks);
-
-    var shown = document.createElement('li');
-    shown.textContent = 'Shown: ' + Image.list[i].shown;
-    placeHere.appendChild(shown);
-  }
-
+    // Configuration options go here
+    options: {}
+  });
 }
 
