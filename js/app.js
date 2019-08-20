@@ -53,7 +53,16 @@ var choice3;
 
 function showImages () {
 
+  if (imagesUsed.length === 6) {
+    for (var i = 0; i < 3; i++) {
+      imagesUsed.shift();
+    }
+  }
+
   var randImg1 = createRandom();
+  while (imagesUsed.includes(randImg1) === true){
+    randImg1 = createRandom();
+  }
   pic1.src = Image.list[randImg1].src;
   caption1.textContent = Image.list[randImg1].name;
   imagesUsed.push(randImg1);
@@ -80,12 +89,6 @@ function showImages () {
   Image.list[randImg3].shown++;
   choice3 = Image.list[randImg3];
 
-  if (imagesUsed.length >= 6) {
-    for (var i = 0; i < 3; i++) {
-      imagesUsed.shift();
-    }
-  }
-
 }
 
 showImages();
@@ -95,9 +98,9 @@ pic2.addEventListener('click', chosenTwo);
 pic3.addEventListener('click', chosenThree);
 
 function chosenOne () {
-  showImages();
   choice1.clicks++;
   totalClicks++;
+  showImages();
 
   if (totalClicks >= 25) {
     pic1.removeEventListener('click', chosenOne);
@@ -109,9 +112,9 @@ function chosenOne () {
 }
 
 function chosenTwo () {
-  showImages();
   choice2.clicks++;
   totalClicks++;
+  showImages();
 
   if (totalClicks >= 25) {
     pic1.removeEventListener('click', chosenOne);
@@ -123,9 +126,9 @@ function chosenTwo () {
 }
 
 function chosenThree () {
-  showImages();
   choice3.clicks++;
   totalClicks++;
+  showImages();
 
   if (totalClicks >= 25) {
     pic1.removeEventListener('click', chosenOne);
