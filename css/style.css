@@ -1,0 +1,53 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 960px;
+}
+
+body > header {
+  background: grey;
+  color: aliceblue;
+  font-size: 2.5em;
+  line-height: 100px;
+  text-align: center;
+}
+
+figure {
+  border-style: solid;
+  border-width: 3px;
+  border-color: black;
+  width: 300px;
+  height: 300px;
+  margin-top: 50px;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+}
+
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+section > figure:first-child {
+  margin: 0px 0px 0px 30px;
+  float: right;
+}
+
+section > figure:nth-child(2) {
+  float: right;
+  margin: 0px 0px 0px 30px;
+}
+
+figcaption {
+  max-width: 100%;
+  background: #222;
+  color: aliceblue;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  text-align: center;
+}
