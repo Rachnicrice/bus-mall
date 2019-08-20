@@ -138,12 +138,25 @@ function chosenThree () {
 
 function showChoices() {
   var option = document.createElement('ul');
-  var listHere = document.getElementById('choices')
+  var listHere = document.getElementById('choices');
   listHere.appendChild(option);
+  option.id = 'listyloo';
+
+  var placeHere = document.getElementById('listyloo');
+
   for (var i = 0; i < Image.list.length; i++){
 
-    var name = document.createElement('li')
+    var name = document.createElement('li');
+    name.textContent = 'Item: ' + Image.list[i].name;
+    placeHere.appendChild(name);
 
+    var clicks = document.createElement('li');
+    clicks.textContent = 'Clicks: ' + Image.list[i].clicks;
+    placeHere.appendChild(clicks);
+
+    var shown = document.createElement('li');
+    shown.textContent = 'Shown: ' + Image.list[i].shown;
+    placeHere.appendChild(shown);
   }
 
 }
