@@ -1,16 +1,11 @@
 'use strict';
 
-var pic1 = document.getElementById('img1');
-var caption1 = document.getElementById('figure1');
-var pic2 = document.getElementById('img2');
-var caption2 = document.getElementById('figure2');
-var pic3 = document.getElementById('img3');
-var caption3 = document.getElementById('figure3');
+var container = document.getElementById('image-box');
 
 var imagesUsed = [];
 var totalClicks = 0;
-
-console.log (pic1);
+var percents = [];
+var labels = [];
 
 function Image (name, src) {
   this.name = name;
@@ -21,6 +16,14 @@ function Image (name, src) {
 }
 
 Image.list = [];
+
+Image.prototype.updateShown = function () {
+  this.shown++;
+};
+
+Image.prototype.updateClicks = function () {
+  this.clicks++;
+};
 
 new Image ('bag', './img/bag.jpg');
 new Image ('banana', './img/banana.jpg');
@@ -44,123 +47,139 @@ new Image ('water can', './img/water-can.jpg');
 new Image ('wine glass', './img/wine-glass.jpg');
 
 function createRandom () {
-  return Math.floor(Math.random() * Image.list.length);
+  var randomNum = Math.floor(Math.random() * Image.list.length);
+
+  while (imagesUsed.includes(randomNum) === true){
+    randomNum = Math.floor(Math.random() * Image.list.length);
+  }
+
+  return randomNum;
 }
 
-var choice1;
-var choice2;
-var choice3;
+function createImageContainers (numImages) {
 
-function showImages () {
+  for(var i = 1; i <= numImages; i++) {
+    var figure = document.createElement('figure');
+    figure.id = `figure-${i}`;
+    container.appendChild(figure);
+    var imageHolder = document.getElementById(`figure-${i}`);
 
+
+    var img = document.createElement('img');
+    img.id = `img-${i}`;
+    imageHolder.appendChild(img);
+
+    var caption = document.createElement('figcaption');
+    caption.id = `caption-${i}`;
+    imageHolder.appendChild(caption);
+
+  }
+}
+
+function renderImages (numImages) {
+
+  checkArray();
+
+  for (var i = 1; i <= numImages; i++) {
+    var id = `img-${i}`;
+    var img = document.getElementById(id);
+
+    var imageObject = createRandom();
+
+    img.src = Image.list[imageObject].src;
+    img.alt = Image.list[imageObject].name;
+
+    imagesUsed.push(imageObject);
+    Image.list[imageObject].updateShown();
+
+    var location = `caption-${i}`;
+    var caption = document.getElementById(location);
+
+    caption.textContent = Image.list[imageObject].name;
+  }
+
+}
+
+function checkArray () {
   if (imagesUsed.length === 6) {
     for (var i = 0; i < 3; i++) {
       imagesUsed.shift();
     }
   }
-
-  var randImg1 = createRandom();
-  while (imagesUsed.includes(randImg1) === true){
-    randImg1 = createRandom();
-  }
-  pic1.src = Image.list[randImg1].src;
-  caption1.textContent = Image.list[randImg1].name;
-  imagesUsed.push(randImg1);
-  Image.list[randImg1].shown++;
-  choice1 = Image.list[randImg1];
-
-  var randImg2 = createRandom();
-  while (imagesUsed.includes(randImg2) === true){
-    randImg2 = createRandom();
-  }
-  pic2.src = Image.list[randImg2].src;
-  caption2.textContent = Image.list[randImg2].name;
-  imagesUsed.push(randImg2);
-  Image.list[randImg2].shown++;
-  choice2 = Image.list[randImg2];
-
-  var randImg3 = createRandom();
-  while (imagesUsed.includes(randImg3) === true){
-    randImg3 = createRandom();
-  }
-  pic3.src = Image.list[randImg3].src;
-  caption3.textContent = Image.list[randImg3].name;
-  imagesUsed.push(randImg3);
-  Image.list[randImg3].shown++;
-  choice3 = Image.list[randImg3];
-
 }
 
-showImages();
+function getPercentages () {
+  for (var i = 0; i < Image.list.length; i++) {
+    var percent = Math.floor((Image.list[i].clicks/Image.list[i].shown) * 100);
 
-pic1.addEventListener('click', chosenOne);
-pic2.addEventListener('click', chosenTwo);
-pic3.addEventListener('click', chosenThree);
+    percents.push(percent);
+  }
+}
 
-function chosenOne () {
-  choice1.clicks++;
-  totalClicks++;
-  showImages();
+function getLabels () {
+  for (var i = 0; i < Image.list.length; i++) {
+    var name = Image.list[i].name;
+
+    labels.push(name);
+  }
+}
+
+function checkNumClicks () {
 
   if (totalClicks >= 25) {
-    pic1.removeEventListener('click', chosenOne);
-    pic2.removeEventListener('click', chosenTwo);
-    pic3.removeEventListener('click', chosenThree);
+    container.removeEventListener('click', eventHandler);
 
-    showChoices();
+
+    getPercentages();
+    makeChart();
   }
 }
 
-function chosenTwo () {
-  choice2.clicks++;
+createImageContainers(3);
+renderImages(3);
+setUpListener();
+getLabels ();
+
+function setUpListener () {
+  container.addEventListener('click', eventHandler);
+}
+
+function eventHandler (e) {
+
+  checkNumClicks();
+
+  var imageName = e.target.alt;
+
+  for (var i = 0; i < Image.list.length; i++) {
+
+    if (Image.list[i].name === imageName) {
+      Image.list[i].updateClicks();
+    }
+  }
   totalClicks++;
-  showImages();
-
-  if (totalClicks >= 25) {
-    pic1.removeEventListener('click', chosenOne);
-    pic2.removeEventListener('click', chosenTwo);
-    pic3.removeEventListener('click', chosenThree);
-
-    showChoices();
-  }
+  renderImages(3);
 }
 
-function chosenThree () {
-  choice3.clicks++;
-  totalClicks++;
-  showImages();
+function makeChart () {
+//Sourced from chartjs.org
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var chart = new Chart(ctx, {
+  // The type of chart we want to create
+    type: 'bar',
 
-  if (totalClicks >= 25) {
-    pic1.removeEventListener('click', chosenOne);
-    pic2.removeEventListener('click', chosenTwo);
-    pic3.removeEventListener('click', chosenThree);
+    // The data for our dataset
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Item Selections by Percent',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: percents
+      }]
+    },
 
-    showChoices();
-  }
-}
-
-function showChoices() {
-  var option = document.createElement('ul');
-  var listHere = document.getElementById('choices');
-  listHere.appendChild(option);
-  option.id = 'listyloo';
-
-  var placeHere = document.getElementById('listyloo');
-
-  for (var i = 0; i < Image.list.length; i++){
-
-    var name = document.createElement('li');
-    name.textContent = 'Item: ' + Image.list[i].name;
-    placeHere.appendChild(name);
-
-    var clicks = document.createElement('li');
-    clicks.textContent = 'Clicks: ' + Image.list[i].clicks;
-    placeHere.appendChild(clicks);
-
-    var shown = document.createElement('li');
-    shown.textContent = 'Shown: ' + Image.list[i].shown;
-    placeHere.appendChild(shown);
-  }
-
+    // Configuration options go here
+    options: {}
+  });
 }
 
